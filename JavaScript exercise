@@ -1,0 +1,123 @@
+/**
+ * @return {Function}
+ */
+var createHelloWorld = function() {
+    return function(...args) {
+        return "Hello World"; // Always return "Hello World"
+    };
+};
+
+/**
+ * Example usage:
+ */
+const f = createHelloWorld();
+console.log(f()); // Output: "Hello World"
+console.log(f({}, null, 42)); // Output: "Hello World"
+
+
+/**
+ * @param {number} n
+ * @return {Function} counter
+ */
+var createCounter = function(n) {
+    let currentCount = n; // Initialize current count with n
+
+    return function() {
+        return currentCount++; // Return current count and increment it for the next call
+    };
+};
+
+/** 
+ * Example usage:
+ */
+const counter = createCounter(10);
+console.log(counter()); // Output: 10
+console.log(counter()); // Output: 11
+console.log(counter()); // Output: 12
+
+const counterNegative = createCounter(-2);
+console.log(counterNegative()); // Output: -2
+console.log(counterNegative()); // Output: -1
+console.log(counterNegative()); // Output: 0
+console.log(counterNegative()); // Output: 1
+console.log(counterNegative()); // Output: 2
+
+
+/**
+ * @param {any} val
+ * @return {Object}
+ */
+var expect = function(val) {
+    return {
+        toBe: function(otherVal) {
+            if (val === otherVal) {
+                return true; // Values are equal
+            } else {
+                throw new Error("Not Equal"); // Values are not equal
+            }
+        },
+        notToBe: function(otherVal) {
+            if (val !== otherVal) {
+                return true; // Values are not equal
+            } else {
+                throw new Error("Equal"); // Values are equal
+            }
+        }
+    };
+};
+
+/**
+ * Example usage:
+ */
+try {
+    console.log(expect(5).toBe(5)); // Output: true
+} catch (e) {
+    console.log(e.message); // Not Equal
+}
+
+try {
+    console.log(expect(5).toBe(null)); // Throws "Not Equal"
+} catch (e) {
+    console.log(e.message); // Not Equal
+}
+
+try {
+    console.log(expect(5).notToBe(null)); // Output: true
+} catch (e) {
+    console.log(e.message); // Equal
+}
+
+try {
+    console.log(expect(5).notToBe(5)); // Throws "Equal"
+} catch (e) {
+    console.log(e.message); // Equal
+}
+
+
+/**
+ * @param {number[]} arr
+ * @param {Function} fn
+ * @return {number[]}
+ */
+var map = function(arr, fn) {
+    const result = []; // Initialize an empty array to store the results
+    
+    for (let i = 0; i < arr.length; i++) { // Iterate through each element in the input array
+        result.push(fn(arr[i], i)); // Apply the function fn and push the result to the new array
+    }
+    
+    return result; // Return the new transformed array
+};
+
+// Example usage:
+const arr1 = [1, 2, 3];
+const plusOne = function(n) { return n + 1; };
+console.log(map(arr1, plusOne)); // Output: [2, 3, 4]
+
+const arr2 = [1, 2, 3];
+const plusI = function(n, i) { return n + i; };
+console.log(map(arr2, plusI)); // Output: [1, 3, 5]
+
+const arr3 = [10, 20, 30];
+const constant = function() { return 42; };
+console.log(map(arr3, constant)); // Output: [42, 42, 42]
