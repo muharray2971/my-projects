@@ -1,0 +1,333 @@
+import pandas as pd
+
+# Function to drop rows with missing data in the 'name' column
+def dropMissingData(students: pd.DataFrame) -> pd.DataFrame:
+    # Drop rows where the 'name' column has missing values
+    return students.dropna(subset=['name'])
+
+# Sample input data
+data = {
+    'student_id': [32, 217, 779, 849],
+    'name': ['Piper', None, 'Georgia', 'Willow'],
+    'age': [5, 19, 20, 14]
+}
+
+# Create DataFrame
+students = pd.DataFrame(data)
+
+# Call the function
+result = dropMissingData(students)
+
+# Display the result
+print(result)
+
+
+import pandas as pd
+
+# Function to rename columns
+def renameColumns(students: pd.DataFrame) -> pd.DataFrame:
+    # Define the new column names
+    new_column_names = {
+        'id': 'student_id',
+        'first': 'first_name',
+        'last': 'last_name',
+        'age': 'age_in_years'
+    }
+    
+    # Rename the columns
+    students = students.rename(columns=new_column_names)
+    return students
+
+# Sample input data
+data = {
+    'id': [1, 2, 3, 4, 5],
+    'first': ['Mason', 'Ava', 'Taylor', 'Georgia', 'Thomas'],
+    'last': ['King', 'Wright', 'Hall', 'Thompson', 'Moore'],
+    'age': [6, 7, 16, 18, 10]
+}
+
+# Create DataFrame
+students = pd.DataFrame(data)
+
+# Call the function
+result = renameColumns(students)
+
+# Display the result
+print(result)
+
+
+import pandas as pd
+
+# Function to change the data type of the 'grade' column
+def changeDatatype(students: pd.DataFrame) -> pd.DataFrame:
+    # Convert the 'grade' column from float to int
+    students['grade'] = students['grade'].astype(int)
+    return students
+
+# Sample input data
+data = {
+    'student_id': [1, 2],
+    'name': ['Ava', 'Kate'],
+    'age': [6, 15],
+    'grade': [73.0, 87.0]
+}
+
+# Create DataFrame
+students = pd.DataFrame(data)
+
+# Call the function
+result = changeDatatype(students)
+
+# Display the result
+print(result)
+
+
+import pandas as pd
+
+# Function to fill missing values in the 'quantity' column with 0
+def fillMissingValues(products: pd.DataFrame) -> pd.DataFrame:
+    # Fill missing values in 'quantity' with 0
+    products['quantity'] = products['quantity'].fillna(0)
+    return products
+
+# Sample input data
+data = {
+    'name': ['Wristwatch', 'WirelessEarbuds', 'GolfClubs', 'Printer'],
+    'quantity': [None, None, 779, 849],
+    'price': [135, 821, 9319, 3051]
+}
+
+# Create DataFrame
+products = pd.DataFrame(data)
+
+# Call the function
+result = fillMissingValues(products)
+
+# Display the result
+print(result)
+
+
+import pandas as pd
+
+# Function to concatenate two DataFrames
+def concatenateTables(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
+    # Concatenate df1 and df2 vertically
+    result = pd.concat([df1, df2], ignore_index=True)
+    return result
+
+# Sample input data for df1
+data1 = {
+    'student_id': [1, 2, 3, 4],
+    'name': ['Mason', 'Ava', 'Taylor', 'Georgia'],
+    'age': [8, 6, 15, 17]
+}
+
+# Sample input data for df2
+data2 = {
+    'student_id': [5, 6],
+    'name': ['Leo', 'Alex'],
+    'age': [7, 7]
+}
+
+# Create DataFrames
+df1 = pd.DataFrame(data1)
+df2 = pd.DataFrame(data2)
+
+# Call the function to concatenate DataFrames
+result = concatenateTables(df1, df2)
+
+# Display the result
+print(result)
+
+
+import pandas as pd
+
+def pivotTable(weather: pd.DataFrame) -> pd.DataFrame:
+    # Use pivot_table to reshape the DataFrame
+    pivoted = weather.pivot_table(index='month', columns='city', values='temperature', aggfunc='first')
+    
+    # Reset the index to convert the 'month' index back into a column
+    pivoted.reset_index(inplace=True)
+    
+    # Rename the columns to remove the MultiIndex name
+    pivoted.columns.name = None  # Remove the name for the columns
+
+    return pivoted
+
+# Sample input data for the weather DataFrame
+data = {
+    'city': ['Jacksonville', 'Jacksonville', 'Jacksonville', 'Jacksonville', 'Jacksonville',
+             'ElPaso', 'ElPaso', 'ElPaso', 'ElPaso', 'ElPaso'],
+    'month': ['January', 'February', 'March', 'April', 'May',
+              'January', 'February', 'March', 'April', 'May'],
+    'temperature': [13, 23, 38, 5, 34, 20, 6, 26, 2, 43]
+}
+
+# Create the DataFrame
+weather_df = pd.DataFrame(data)
+
+# Call the function to pivot the DataFrame
+result = pivotTable(weather_df)
+
+# Display the result
+print(result)
+
+
+import pandas as pd
+
+def meltTable(report: pd.DataFrame) -> pd.DataFrame:
+    # Use the melt function to reshape the DataFrame
+    melted = pd.melt(report, id_vars=['product'], 
+                     value_vars=['quarter_1', 'quarter_2', 'quarter_3', 'quarter_4'],
+                     var_name='quarter', value_name='sales')
+    
+    return melted
+
+# Sample input data for the report DataFrame
+data = {
+    'product': ['Umbrella', 'SleepingBag'],
+    'quarter_1': [417, 800],
+    'quarter_2': [224, 936],
+    'quarter_3': [379, 93],
+    'quarter_4': [611, 875]
+}
+
+# Create the DataFrame
+report_df = pd.DataFrame(data)
+
+# Call the function to reshape the DataFrame
+result = meltTable(report_df)
+
+# Display the result
+print(result)
+
+
+import pandas as pd
+
+def findHeavyAnimals(animals: pd.DataFrame) -> pd.DataFrame:
+    return (animals[animals['weight'] > 100]
+            .sort_values(by='weight', ascending=False)[['name']])
+
+# Sample input data for the animals DataFrame
+data = {
+    'name': ['Tatiana', 'Khaled', 'Alex', 'Jonathan', 'Stefan', 'Tommy'],
+    'species': ['Snake', 'Giraffe', 'Leopard', 'Monkey', 'Bear', 'Panda'],
+    'age': [98, 50, 6, 45, 100, 26],
+    'weight': [464, 41, 328, 463, 50, 349]
+}
+
+# Create the DataFrame
+animals_df = pd.DataFrame(data)
+
+# Call the function to list the heavy animals
+result = findHeavyAnimals(animals_df)
+
+# Display the result
+print(result)
+
+
+import pandas as pd
+
+def createDataframe(student_data):
+    # Create a DataFrame from the 2D list and specify column names
+    df = pd.DataFrame(student_data, columns=['student_id', 'age'])
+    return df
+
+# Sample input data
+student_data = [
+    [1, 15],
+    [2, 11],
+    [3, 11],
+    [4, 20]
+]
+
+# Create the DataFrame
+result_df = createDataframe(student_data)
+
+# Display the result
+print(result_df)
+
+
+import pandas as pd
+
+def findHeavyAnimals(animals: pd.DataFrame) -> pd.DataFrame:
+    # Use method chaining to filter and sort the DataFrame
+    return (animals[animals['weight'] > 100]  # Filter animals heavier than 100 kg
+            .sort_values(by='weight', ascending=False)  # Sort by weight in descending order
+            [['name']])  # Return only the 'name' column
+
+# Example usage
+if __name__ == "__main__":
+    # Example DataFrame
+    data = {
+        'name': ['Tatiana', 'Khaled', 'Alex', 'Jonathan', 'Stefan', 'Tommy'],
+        'species': ['Snake', 'Giraffe', 'Leopard', 'Monkey', 'Bear', 'Panda'],
+        'age': [98, 50, 6, 45, 100, 26],
+        'weight': [464, 41, 328, 463, 50, 349]
+    }
+
+    animals = pd.DataFrame(data)
+
+    # Call the function
+    result = findHeavyAnimals(animals)
+
+    # Print the result
+    print(result)
+
+
+import pandas as pd
+
+def pivotTable(weather: pd.DataFrame) -> pd.DataFrame:
+    # Pivot the DataFrame
+    pivoted_df = weather.pivot(index='month', columns='city', values='temperature')
+    
+    # Reset the index to get 'month' as a column and sort the DataFrame by month
+    pivoted_df.reset_index(inplace=True)
+    
+    # Sort the months in the desired order (assuming the order of the months)
+    month_order = ['January', 'February', 'March', 'April', 'May']
+    pivoted_df['month'] = pd.Categorical(pivoted_df['month'], categories=month_order, ordered=True)
+    pivoted_df.sort_values('month', inplace=True)
+    
+    return pivoted_df
+
+# Example usage
+if __name__ == "__main__":
+    # Sample DataFrame
+    data = {
+        'city': ['Jacksonville', 'Jacksonville', 'Jacksonville', 'Jacksonville', 'Jacksonville',
+                 'ElPaso', 'ElPaso', 'ElPaso', 'ElPaso', 'ElPaso'],
+        'month': ['January', 'February', 'March', 'April', 'May',
+                  'January', 'February', 'March', 'April', 'May'],
+        'temperature': [13, 23, 38, 5, 34, 20, 6, 26, 2, 43]
+    }
+
+    weather_df = pd.DataFrame(data)
+
+    # Call the function
+    result = pivotTable(weather_df)
+
+    # Print the result
+    print(result)
+
+
+import pandas as pd
+
+def createDataframe(student_data):
+    # Create a DataFrame from the 2D list
+    df = pd.DataFrame(student_data, columns=['student_id', 'age'])
+    return df
+
+# Example usage
+if __name__ == "__main__":
+    # Sample 2D list
+    student_data = [
+        [1, 15],
+        [2, 11],
+        [3, 11],
+        [4, 20]
+    ]
+
+    # Call the function and print the DataFrame
+    result = createDataframe(student_data)
+    print(result)
