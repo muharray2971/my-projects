@@ -1,0 +1,92 @@
+import pandas as pd
+from typing import List
+
+def createDataframe(student_data: List[List[int]]) -> pd.DataFrame:
+    # Create the DataFrame with specified columns
+    df = pd.DataFrame(student_data, columns=['student_id', 'age'])
+    return df
+
+# Example usage
+student_data = [
+  [1, 15],
+  [2, 11],
+  [3, 11],
+  [4, 20]
+]
+
+# Create and display the DataFrame
+df = createDataframe(student_data)
+print(df)
+
+
+
+
+import pandas as pd
+from typing import List
+
+def getDataframeSize(players: pd.DataFrame) -> List[int]:
+    # Use .shape to get the number of rows and columns
+    rows, cols = players.shape
+    return [rows, cols]
+
+# Example usage
+data = {
+    "player_id": [846, 749, 155, 583, 388, 883, 355, 247, 761, 642],
+    "name": ["Mason", "Riley", "Bob", "Isabella", "Zachary", "Ava", "Violet", "Thomas", "Jack", "Charlie"],
+    "age": [21, 30, 28, 32, 24, 23, 18, 27, 33, 36],
+    "position": ["Forward", "Winger", "Striker", "Goalkeeper", "Midfielder", "Defender", "Striker", "Striker", "Midfielder", "Center-back"],
+    "team": ["RealMadrid", "Barcelona", "ManchesterUnited", "Liverpool", "BayernMunich", "Chelsea", "Juventus", "ParisSaint-Germain", "ManchesterCity", "Arsenal"]
+}
+
+# Create the DataFrame
+players = pd.DataFrame(data)
+
+# Get the size of the DataFrame
+size = getDataframeSize(players)
+print(size)
+
+import pandas as pd
+
+def selectFirstRows(df):
+    # Return the first 3 rows of the DataFrame
+    return df.head(3)
+
+# Example DataFrame for demonstration
+data = {
+    'employee_id': [3, 90, 9, 60, 49, 43],
+    'name': ['Bob', 'Alice', 'Tatiana', 'Annabelle', 'Jonathan', 'Khaled'],
+    'department': ['Operations', 'Sales', 'Engineering', 'InformationTechnology', 'HumanResources', 'Administration'],
+    'salary': [48675, 11096, 33805, 37678, 23793, 40454]
+}
+
+# Create the DataFrame
+employees = pd.DataFrame(data)
+
+# Assuming this is the function you need to call
+result_table = selectFirstRows(employees)
+
+# Print the result to verify
+print(result_table)
+
+import pandas as pd
+
+def selectData(df):
+    # Filter the DataFrame for student_id = 101 and select name and age
+    return df[df['student_id'] == 101][['name', 'age']]
+
+# Example DataFrame for demonstration
+data = {
+    'student_id': [101, 53, 128, 3],
+    'name': ['Ulysses', 'William', 'Henry', 'Henry'],
+    'age': [13, 10, 6, 11]
+}
+
+# Create the DataFrame
+students = pd.DataFrame(data)
+
+# Assuming this is how you need to call the function
+result_table = selectData(students)
+
+# Print the result to 
+
+
