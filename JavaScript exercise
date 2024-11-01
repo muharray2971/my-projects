@@ -121,3 +121,380 @@ console.log(map(arr2, plusI)); // Output: [1, 3, 5]
 const arr3 = [10, 20, 30];
 const constant = function() { return 42; };
 console.log(map(arr3, constant)); // Output: [42, 42, 42]
+
+/**
+ * @param {Function[]} functions - Array of functions to compose
+ * @return {Function} - A single composed function
+ */
+var compose = function(functions) {
+    return function(x) {
+        return functions.reduceRight((acc, fn) => fn(acc), x);
+    };
+};
+
+// Test cases
+// Example 1
+const functions1 = [x => x + 1, x => x * x, x => 2 * x];
+const fn1 = compose(functions1);
+console.log(fn1(4)); // Expected output: 65
+
+// Example 2
+const functions2 = [x => 10 * x, x => 10 * x, x => 10 * x];
+const fn2 = compose(functions2);
+console.log(fn2(1)); // Expected output: 1000
+
+// Example 3
+const functions3 = [];
+const fn3 = compose(functions3);
+console.log(fn3(42)); // Expected output: 42
+
+
+function memoize(fn) {
+    const cache = new Map();
+    let callCount = 0; // Track the number of times the function is called
+
+    const memoizedFunction = function(...args) {
+        const key = JSON.stringify(args); // Create a unique key based on arguments
+
+        if (cache.has(key)) {
+            return cache.get(key); // Return cached value if it exists
+        }
+
+        callCount++; // Increment call count
+        const result = fn(...args); // Call the original function
+        cache.set(key, result); // Cache the result
+        return result;
+    };
+
+    memoizedFunction.getCallCount = function() {
+        return callCount; // Return the number of calls made
+    };
+
+    return memoizedFunction;
+}
+
+// Base functions
+const sum = (a, b) => a + b;
+
+const factorial = (n) => {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+};
+
+const fib = (n) => {
+    if (n <= 1) return n;
+    return fib(n - 1) + fib(n - 2);
+};
+
+// Function to create the appropria
+
+
+/**
+ * @param {Promise<number>} promise1 - First promise that resolves to a number
+ * @param {Promise<number>} promise2 - Second promise that resolves to a number
+ * @return {Promise<number>} - A promise that resolves to the sum of the two numbers
+ */
+function addTwoPromises(promise1, promise2) {
+    return Promise.all([promise1, promise2]) // Wait for both promises to resolve
+        .then(results => results[0] + results[1]); // Sum the resolved values
+}
+
+// Example usage
+const promise1 = new Promise(resolve => setTimeout(() => resolve(2), 20));
+const promise2 = new Promise(resolve => setTimeout(() => resolve(5), 60));
+
+addTwoPromises(promise1, promise2).then(result => console.log(result)); // Output: 7
+
+const promise3 = new Promise(resolve => setTimeout(() => resolve(10), 50));
+const promise4 = new Promise(resolve => setTimeout(() => resolve(-12), 30));
+
+addTwoPromises(promise3, promise4).then(result => console.log(result)); // Output: -2
+
+
+/**
+ * @param {number} millis - The number of milliseconds to sleep
+ * @return {Promise} - A promise that resolves after the specified milliseconds
+ */
+function sleep(millis) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve(millis); // Resolve the promise with the input millis
+        }, millis);
+    });
+}
+
+// Example usage:
+let t = Date.now();
+sleep(100).then(() => {
+    console.log(Date.now() - t); // Should log approximately 100
+});
+
+let t2 = Date.now();
+sleep(200).then(() => {
+    console.log(Date.now() - t2); // Should log approximately 200
+});
+
+
+/**
+ * @param {Function} fn - The function to be executed after the delay
+ * @param {Array} args - The arguments to pass to the function
+ * @param {number} t - The delay in milliseconds before executing the function
+ * @return {Function} - A function that cancels the delayed execution
+ */
+function cancellable(fn, args, t) {
+    let timeoutId; // Variable to store the timeout ID
+
+    // Set up the delayed execution of the function
+    timeoutId = setTimeout(() => {
+        fn(...args); // Execute the function with the provided arguments
+    }, t);
+
+    // Return the cancel function
+    return function cancelFn() {
+        clearTimeout(timeoutId); // Cancel the execution if it's still pending
+    };
+}
+
+// Example usage:
+const cancelTimeMs = 50;
+
+// Example 1
+const cancelFn1 = cancellable((x) => console.log(`Returned: ${x * 5}`), [2], 20);
+setTimeout(cancelFn1, cancelTimeMs); // Should log "Returned: 10" after 20ms
+
+// Example 2
+const cancelFn2 = cancellable((x) => console.log(`Returned: ${x ** 2}`), [2], 100);
+setTimeout(cancelFn2, cancelTimeMs); // Should not log anything since it's canceled before execution
+
+// Example 3
+const cancelFn3 = cancellable((x1, x2) => console.log(`Returned: ${x1 * x2}`), [2, 4], 30);
+setTimeout(cancelFn3, cancelTimeMs); // Should log "Returned: 8" after 30ms
+
+
+/**
+ * @param {Function} fn - The function to be executed repeatedly
+ * @param {Array} args - The arguments to pass to the function
+ * @param {number} t - The interval in milliseconds between function calls
+ * @return {Function} - A function that cancels the repeated execution
+ */
+function cancellable(fn, args, t) {
+    const results = []; // Store the results of each call
+    let intervalId; // Variable to store the interval ID
+
+    // Function to execute fn immediately and start the interval
+    const executeFunction = () => {
+        const result = fn(...args);
+        const time = Date.now(); // Capture the current time
+        results.push({ time: time, returned: result }); // Store the result with time
+    };
+
+    // Execute immediately
+    executeFunction();
+
+    // Set up the interval to execute the function repeatedly
+    intervalId = setInterval(() => {
+        executeFunction();
+    }, t);
+
+    // Return the cancel function
+    return function cancelFn() {
+        clearInterval(intervalId); // Cancel the interval
+        return results; // Return the results array
+    };
+}
+
+// Function to simulate running the cancellable function
+function runExample() {
+    const cancelTimeMs = 190; // Set the cancellation time
+    const cancelFn = cancellable((x) => x * 2, [4], 35); // Create cancellable function
+
+    // Wait for the cancellation time and then call the cancel function
+    setTimeout(() => {
+        const results = cancelFn(); // Call the cancel function
+        console.log(results); // Log results when cancelled
+    }, cancelTimeMs);
+}
+
+// Run the example
+runExample();
+
+
+/**
+ * @param {Function} fn - The asynchronous function to be time-limited
+ * @param {number} t - The time limit in milliseconds
+ * @return {Function} - A time-limited version of the input function
+ */
+function timeLimit(fn, t) {
+    return async function(...args) {
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => {
+                reject("Time Limit Exceeded");
+            }, t);
+        });
+
+        // Execute the function and return whichever finishes first
+        try {
+            const result = await Promise.race([fn(...args), timeoutPromise]);
+            return result;
+        } catch (err) {
+            throw err; // This will be caught in the caller
+        }
+    };
+}
+
+// Example usage function to test it
+async function runExample() {
+    // Example 1
+    const fn1 = async (n) => {
+        await new Promise(res => setTimeout(res, 100));
+        return n * n;
+    };
+    const limited1 = timeLimit(fn1, 50);
+    const start1 = performance.now();
+    try {
+        const res1 = await limited1(5);
+        console.log({"resolved": res1, "time": Math.floor(performance.now() - start1)});
+    } catch (err) {
+        console.log({"rejected": err, "time": Math.floor(performance.now() - start1)});
+    }
+
+    // Example 2
+    const fn2 = async (n) => {
+        await new Promise(res => setTimeout(res, 100));
+        return n * n;
+    };
+    const limited2 = timeLimit(fn2, 150);
+    const start2 = performance.now();
+    try {
+        const res2 = await limited2(5);
+        console.log({"resolved": res2, "time": Math.floor(performance.now() - start2)});
+    } catch (err) {
+        console.log({"rejected": err, "time": Math.floor(performance.now() - start2)});
+    }
+
+    // Example 3
+    const fn3 = async (a, b) => {
+        await new Promise(res => setTimeout(res, 120));
+        return a + b;
+    };
+    const limited3 = timeLimit(fn3, 150);
+    const start3 = performance.now();
+    try {
+        const res3 = await limited3(5, 10);
+        console.log({"resolved": res3, "time": Math.floor(performance.now() - start3)});
+    } catch (err) {
+        console.log({"rejected": err, "time": Math.floor(performance.now() - start3)});
+    }
+
+    // Example 4
+    const fn4 = async () => {
+        throw "Error";
+    };
+    const limited4 = timeLimit(fn4, 1000);
+    const start4 = performance.now();
+    try {
+        const res4 = await limited4();
+        console.log({"resolved": res4, "time": Math.floor(performance.now() - start4)});
+    } catch (err) {
+        console.log({"rejected": err, "time": Math.floor(performance.now() - start4)});
+    }
+}
+
+// Run the examples
+runExample();
+
+
+/**
+ * Returns a debounced version of the provided function.
+ * @param {Function} fn - The function to debounce.
+ * @param {number} t - The number of milliseconds to delay.
+ * @return {Function} - The debounced function.
+ */
+function debounce(fn, t) {
+    let timeoutId; // Variable to hold the timeout ID
+
+    return function(...args) {
+        // Clear the existing timeout if the function is called again
+        clearTimeout(timeoutId);
+
+        // Set a new timeout
+        timeoutId = setTimeout(() => {
+            fn(...args); // Call the original function with the arguments
+        }, t);
+    };
+}
+
+// Example usage
+function runExample() {
+    let start = Date.now();
+
+    function log(...inputs) {
+        console.log([Date.now() - start, inputs]);
+    }
+
+    const dlog = debounce(log, 50);
+
+    const calls = [
+        { t: 50, inputs: [1] },
+        { t: 75, inputs: [2] },
+        { t: 100, inputs: [3] },
+        { t: 150, inputs: [4] }
+    ];
+
+    calls.forEach(call => {
+        setTimeout(() => dlog(...call.inputs), call.t);
+    });
+}
+
+// Run the example
+runExample();
+
+
+/**
+ * Executes an array of asynchronous functions in parallel.
+ * @param {Function[]} functions - An array of functions that return promises.
+ * @return {Promise} - A promise that resolves with an array of resolved values or rejects with the reason of the first rejection.
+ */
+function promiseAll(functions) {
+    return new Promise((resolve, reject) => {
+        const results = new Array(functions.length); // Array to hold results
+        let completed = 0; // Counter for completed promises
+
+        // Loop through each function and execute it
+        functions.forEach((fn, index) => {
+            fn() // Call the function
+                .then(value => {
+                    results[index] = value; // Store the resolved value in the correct index
+                    completed++; // Increment the completed counter
+
+                    // If all promises have completed, resolve the promise
+                    if (completed === functions.length) {
+                        resolve(results);
+                    }
+                })
+                .catch(error => {
+                    // If any promise rejects, reject the overall promise immediately
+                    reject(error);
+                });
+        });
+    });
+}
+
+// Example usage function to test it
+async function runExample() {
+    const functions = [
+        () => new Promise(resolve => setTimeout(() => resolve(5), 200)),
+        () => new Promise(resolve => setTimeout(() => resolve(10), 100)),
+        () => new Promise((_, reject) => setTimeout(() => reject("Error"), 150)),
+    ];
+
+    try {
+        const result = await promiseAll(functions);
+        console.log({ resolved: result });
+    } catch (error) {
+        console.log({ rejected: error });
+    }
+}
+
+// Run the example
+runExample();
